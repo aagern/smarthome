@@ -5,17 +5,16 @@ use tracing::{debug, error, info, warn};
 #[cfg(not(feature = "mock"))]
 mod real;
 #[cfg(not(feature = "mock"))]
+use real::SmartSocket;
+#[cfg(not(feature = "mock"))]
 pub use real::SmartThermometer;
 
 #[cfg(feature = "mock")]
 mod mock;
 #[cfg(feature = "mock")]
+use mock::SmartSocket;
+#[cfg(feature = "mock")]
 pub use mock::SmartThermometer;
-
-struct SmartSocket {
-    is_on: bool,
-    power: f32, // watts
-}
 
 enum SmartDevice {
     SmartThermometer(SmartThermometer),
