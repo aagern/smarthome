@@ -9,6 +9,9 @@ tracing.workspace = true
 tracing-appender.workspace = true
 tracing-subscriber.workspace = true
 
+[features]
+debug = [] # проверка концепции feature flags (example/mocks.rs)
+
 [workspace.dependencies]
 anyhow = "1.0.102"
 tracing = "0.1.44"

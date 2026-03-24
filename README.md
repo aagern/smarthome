@@ -7,12 +7,12 @@
 classDiagram
 class SmartThermometer{
 new(поля) -> SmartTermometer
-Текущая температура: rand i32
+Текущая температура: rand f32
 }
 
 class SmartSocket{
 Включена: bool
-Мощность: rand u32 - 0 если выкл
+Мощность: rand f32 - 0.0 если выкл
 new(поля) -> SmartSocket
 }
 
