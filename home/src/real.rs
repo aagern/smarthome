@@ -17,6 +17,9 @@ impl SmartThermometer {
     pub fn get_current_temperature(&self) -> f32 {
         self.current_temperature
     }
+    pub fn celsius_to_fahrenheit(&self, celsius: f32) -> f32 {
+        celsius * 9.0 / 5.0 + 32.0
+    }
 }
 
 pub struct SmartSocket {

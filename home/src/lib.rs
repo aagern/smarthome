@@ -21,17 +21,21 @@ enum SmartDevice {
     SmartSocket(SmartSocket),
 }
 
-// pub fn add(left: u64, right: u64) -> u64 {
-//     left + right
-// }
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
-    // #[test]
-    // fn it_works() {
-    //     let result = add(2, 2);
-    //     assert_eq!(result, 4);
-    // }
+    #[test]
+    fn test_get_current_temperature() {
+        let smart_thermometer = SmartThermometer::default();
+        assert!(smart_thermometer.get_current_temperature() >= -30.0);
+        assert!(smart_thermometer.get_current_temperature() <= 50.0);
+    }
+
+    #[test]
+    fn test_get_current_power() {
+        let smart_socket = SmartSocket::default();
+        assert!(smart_socket.get_current_power() >= 0.0);
+        assert!(smart_socket.get_current_power() <= 2000.0);
+    }
 }
