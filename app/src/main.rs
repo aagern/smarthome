@@ -1,6 +1,6 @@
 #![allow(unused)]
 use anyhow::{Context, Result};
-use home::SmartThermometer;
+use home::{SmartDevice, SmartSocket, SmartThermometer};
 use logger::setup_tracing;
 use tracing::{debug, error, info, warn};
 
@@ -8,15 +8,20 @@ fn main() -> Result<()> {
     setup_tracing(); // common logger init
     debug!("Logger initialized. App started.");
 
-    info!("Temperature check.");
+    debug!("Device init.");
     let thermo = SmartThermometer::default();
-    let temp = thermo.get_current_temperature();
+    let socket = SmartSocket::default();
 
-    println!("Current temperature: {:.1}°C", temp);
-    println!(
-        "Current temperature: {:.1}°F",
-        thermo.celsius_to_fahrenheit(temp)
-    );
+    let devices = [
+        SmartDevice::Thermometer(thermo),
+        SmartDevice::Socket(socket),
+    ];
+
+    info!("Device check.");
+    for (i, device) in devices.iter().enumerate() {
+        println!("Device #{}", i + 1);
+        device.print_state();
+    }
 
     debug!("App finished.");
     Ok(())

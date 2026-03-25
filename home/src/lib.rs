@@ -14,35 +14,62 @@ pub use real::SmartThermometer;
 #[cfg(feature = "mock")]
 mod mock;
 #[cfg(feature = "mock")]
-use mock::SmartSocket;
+pub use mock::SmartSocket;
 #[cfg(feature = "mock")]
 pub use mock::SmartThermometer;
 
 pub enum SmartDevice {
-    SmartThermometer(SmartThermometer),
-    SmartSocket(SmartSocket),
+    Thermometer(SmartThermometer),
+    Socket(SmartSocket),
 }
 
-pub struct Room {
-    devices: Vec<SmartDevice>,
+impl SmartDevice {
+    pub fn print_state(&self) {
+        match self {
+            SmartDevice::Thermometer(termo) => {
+                println!("- Термометр -");
+                println!(
+                    "Текущая температура: {:.1}°C",
+                    termo.get_current_temperature()
+                );
+                println!("Статус: Активен")
+            }
+            SmartDevice::Socket(socket) => {
+                println!("- Розетка -");
+                println!("Текущая мощность: {:.1}Вт.", socket.get_current_power());
+                println!(
+                    "Статус: {}",
+                    if socket.is_on() {
+                        "Вкл."
+                    } else {
+                        "Выкл."
+                    }
+                )
+            }
+        }
+    }
 }
 
-impl Room {
-    /// Конструктор, принимающий массив устройств
-    pub fn new(devices: Vec<SmartDevice>) -> Self {
-        Room { devices }
-    }
+// pub struct Room {
+//     devices: Vec<SmartDevice>,
+// }
 
-    /// Получить ссылку на устройство по индексу
-    pub fn get_device(&self, index: usize) -> Option<&SmartDevice> {
-        self.devices.get(index)
-    }
+// impl Room {
+//     /// Конструктор, принимающий массив устройств
+//     pub fn new(devices: Vec<SmartDevice>) -> Self {
+//         Room { devices }
+//     }
 
-    /// Получить изменяемую ссылку на устройство по индексу
-    pub fn get_device_mut(&mut self, index: usize) -> Option<&mut SmartDevice> {
-        self.devices.get_mut(index)
-    }
-}
+//     /// Получить ссылку на устройство по индексу
+//     pub fn get_device(&self, index: usize) -> Option<&SmartDevice> {
+//         self.devices.get(index)
+//     }
+
+//     /// Получить изменяемую ссылку на устройство по индексу
+//     pub fn get_device_mut(&mut self, index: usize) -> Option<&mut SmartDevice> {
+//         self.devices.get_mut(index)
+//     }
+// }
 
 #[cfg(test)]
 mod tests {

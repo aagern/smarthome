@@ -40,4 +40,16 @@ impl SmartSocket {
     pub fn get_current_power(&self) -> f32 {
         self.power
     }
+
+    pub fn turn_on(&mut self) {
+        self.is_on = true;
+    }
+
+    pub fn turn_off(&mut self) {
+        self.is_on = false;
+    }
+
+    pub fn is_on(&self) -> bool {
+        self.is_on
+    }
 }
