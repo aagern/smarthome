@@ -1,6 +1,7 @@
 const TEMPERATURE: f32 = 36.6;
 const POWER: f32 = 2000.0;
 
+#[derive(PartialEq)]
 pub struct SmartThermometer {
     current_temperature: f32,
 }
@@ -22,6 +23,7 @@ impl SmartThermometer {
     }
 }
 
+#[derive(PartialEq)]
 pub struct SmartSocket {
     is_on: bool,
     power: f32, // watts

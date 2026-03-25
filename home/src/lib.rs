@@ -18,6 +18,7 @@ pub use mock::SmartSocket;
 #[cfg(feature = "mock")]
 pub use mock::SmartThermometer;
 
+#[derive(PartialEq)]
 pub enum SmartDevice {
     Thermometer(SmartThermometer),
     Socket(SmartSocket),
@@ -50,26 +51,38 @@ impl SmartDevice {
     }
 }
 
-// pub struct Room {
-//     devices: Vec<SmartDevice>,
-// }
+pub struct Room {
+    devices: Vec<SmartDevice>,
+}
 
-// impl Room {
-//     /// Конструктор, принимающий массив устройств
-//     pub fn new(devices: Vec<SmartDevice>) -> Self {
-//         Room { devices }
-//     }
+impl Room {
+    /// Конструктор, принимающий массив устройств
+    pub fn new(devices: Vec<SmartDevice>) -> Self {
+        Room { devices }
+    }
 
-//     /// Получить ссылку на устройство по индексу
-//     pub fn get_device(&self, index: usize) -> Option<&SmartDevice> {
-//         self.devices.get(index)
-//     }
+    /// Получить ссылку на устройство по индексу
+    pub fn get_device(&self, index: usize) -> Option<&SmartDevice> {
+        self.devices.get(index)
+    }
 
-//     /// Получить изменяемую ссылку на устройство по индексу
-//     pub fn get_device_mut(&mut self, index: usize) -> Option<&mut SmartDevice> {
-//         self.devices.get_mut(index)
-//     }
-// }
+    /// Получить изменяемую ссылку на устройство по индексу
+    pub fn get_device_mut(&mut self, index: usize) -> Option<&mut SmartDevice> {
+        self.devices.get_mut(index)
+    }
+
+    /// Выводить в стандартный вывод отчёт о всех устройствах в комнате
+    pub fn print_room_devices(&self) {
+        println!("== Устройства комнаты ==");
+        for device in &self.devices {
+            println!(
+                "Устройство #{}",
+                self.devices.iter().position(|d| d == device).unwrap() + 1
+            );
+            device.print_state();
+        }
+    }
+}
 
 #[cfg(test)]
 mod tests {

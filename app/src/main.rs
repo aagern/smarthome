@@ -12,16 +12,20 @@ fn main() -> Result<()> {
     let thermo = SmartThermometer::default();
     let socket = SmartSocket::default();
 
-    let devices = [
+    let devices = vec![
         SmartDevice::Thermometer(thermo),
         SmartDevice::Socket(socket),
     ];
 
-    info!("Device check.");
-    for (i, device) in devices.iter().enumerate() {
-        println!("Device #{}", i + 1);
-        device.print_state();
-    }
+    let room = home::Room::new(devices);
+
+    info!("Room check.");
+    room.print_room_devices();
+
+    // for (i, device) in devices.iter().enumerate() {
+    //     println!("Device #{}", i + 1);
+    //     device.print_state();
+    // }
 
     debug!("App finished.");
     Ok(())

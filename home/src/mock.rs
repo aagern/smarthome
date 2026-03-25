@@ -1,5 +1,6 @@
 use rand::prelude::*;
 
+#[derive(PartialEq)]
 pub struct SmartThermometer {
     current_temperature: f32,
 }
@@ -21,6 +22,7 @@ impl SmartThermometer {
     }
 }
 
+#[derive(PartialEq)]
 pub struct SmartSocket {
     is_on: bool,
     power: f32, // watts
