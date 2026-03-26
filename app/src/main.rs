@@ -40,8 +40,35 @@ fn main() -> Result<()> {
     bed_room.print_room_devices();
     debug!("Room report created.");
 
-    let house = home::House::new(living_room, vec![bed_room]);
+    let mut house = home::House::new(living_room, vec![bed_room]);
     info!("House created.");
+    house.print_report();
+    debug!("House report created.");
+
+    info!("Выключение розетки в доме...");
+    if let Some(bed_room) = house.get_room_mut(1) {
+        if let Some(device) = bed_room.get_device_mut(2) {
+            match device {
+                SmartDevice::Socket(socket) => {
+                    socket.turn_off();
+                    info!("Socket in room turned OFF!");
+                    debug!(
+                        "Текущая мощность розетки: {}Вт.",
+                        socket.get_current_power()
+                    );
+                }
+                SmartDevice::Thermometer(_) => {
+                    warn!("Thermometer found, but socket expected at index");
+                }
+            }
+        } else {
+            warn!("Device not found by index 1 in bedroom");
+        }
+    } else {
+        warn!("Bedroom not found at index 1");
+    }
+
+    println!(" ==== Обновлённый отчёт по дому ====");
     house.print_report();
     debug!("House report created.");
 
