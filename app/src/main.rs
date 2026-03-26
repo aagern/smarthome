@@ -22,11 +22,6 @@ fn main() -> Result<()> {
     info!("Room check.");
     room.print_room_devices();
 
-    // for (i, device) in devices.iter().enumerate() {
-    //     println!("Device #{}", i + 1);
-    //     device.print_state();
-    // }
-
     debug!("App finished.");
     Ok(())
 }
