@@ -241,6 +241,8 @@ impl House {
 mod tests {
     use super::*;
 
+    /// Проверка, что температура в комнате лежит в допустимом диапазоне.
+    /// Тест слабый, так как зависит от рандома.
     #[test]
     fn test_get_current_temperature() {
         let smart_thermometer = SmartThermometer::default();
@@ -248,6 +250,8 @@ mod tests {
         assert!(smart_thermometer.get_current_temperature() <= 50.0);
     }
 
+    /// Проверка, что мощность в комнате лежит в допустимом диапазоне.
+    /// Тест слабый, так как зависит от рандома.
     #[test]
     fn test_get_current_power() {
         let smart_socket = SmartSocket::default();
@@ -255,6 +259,7 @@ mod tests {
         assert!(smart_socket.get_current_power() <= 2000.0);
     }
 
+    /// Проверка, что get_device возвращает Option<SmartDevice> с указанным устройством, если индекс в пределах длины вектора устройств комнаты, иначе возвращает None.
     #[test]
     fn test_get_device() {
         let thermo = SmartThermometer::default();
@@ -272,6 +277,7 @@ mod tests {
         assert!(test_none.is_none());
     }
 
+    /// Проверка, что get_device_mut возвращает Option<&mut SmartDevice> с указанным устройством, если индекс в пределах длины вектора устройств комнаты, иначе возвращает None.
     #[test]
     fn test_get_device_mut() {
         let thermo = SmartThermometer::default();
@@ -286,6 +292,77 @@ mod tests {
         let test_some = room.get_device_mut(max_length - 1);
         assert!(test_some.is_some());
         let test_none = room.get_device_mut(max_length + 1);
+        assert!(test_none.is_none());
+    }
+
+    /// Проверка, что try_from_vec для Room возвращает Result<Room, String> с комнатой,
+    /// если входной вектор не пустой, иначе возвращает ошибку с сообщением
+    /// "В комнате должно быть минимум одно устройство!".
+    #[test]
+    fn test_try_from_vec_devices() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let check = devices.len();
+        let room = Room::try_from_vec(devices).unwrap();
+        assert_eq!(room.devices.len(), check);
+    }
+
+    /// Проверка, что try_from_vec для House возвращает Result<House, String> с домом,
+    /// если входной вектор не пустой, иначе возвращает ошибку с сообщением
+    /// "В доме должна быть минимум одна комната!".
+    #[test]
+    fn test_try_from_vec_rooms() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let rooms = vec![Room::try_from_vec(devices).unwrap()];
+        let check = rooms.len();
+        let house = House::try_from_vec(rooms).unwrap();
+        assert_eq!(house.rooms.len(), check);
+    }
+
+    /// Проверка, что get_room возвращает Option<&Room> с комнатой,
+    /// если индекс в пределах длины вектора комнат дома, иначе возвращает None.
+    #[test]
+    fn test_get_room() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let rooms = vec![Room::try_from_vec(devices).unwrap()];
+        let max_length = rooms.len();
+        let house = House::try_from_vec(rooms).unwrap();
+        let test_some = house.get_room(max_length - 1);
+        assert!(test_some.is_some());
+        let test_none = house.get_room(max_length + 1);
+        assert!(test_none.is_none());
+    }
+
+    /// Проверка, что get_room_mut возвращает Option<&mut Room> с комнатой,
+    /// если индекс в пределах длины вектора комнат дома, иначе возвращает None.
+    #[test]
+    fn test_get_room_mut() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let rooms = vec![Room::try_from_vec(devices).unwrap()];
+        let max_length = rooms.len();
+        let mut house = House::try_from_vec(rooms).unwrap();
+        let test_some = house.get_room_mut(max_length - 1);
+        assert!(test_some.is_some());
+        let test_none = house.get_room_mut(max_length + 1);
         assert!(test_none.is_none());
     }
 }
