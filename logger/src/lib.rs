@@ -2,7 +2,7 @@
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
 pub fn setup_tracing() {
-    let logfile = tracing_appender::rolling::hourly("./log", "auth");
+    let logfile = tracing_appender::rolling::hourly("./log", "smarthome");
     let stdout = std::io::stdout.with_max_level(tracing::Level::INFO);
 
     let subscriber = tracing_subscriber::fmt()
