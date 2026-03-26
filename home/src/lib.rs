@@ -101,4 +101,40 @@ mod tests {
         assert!(smart_socket.get_current_power() >= 0.0);
         assert!(smart_socket.get_current_power() <= 2000.0);
     }
+
+    #[test]
+    fn test_get_device() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let max_length = devices.len();
+        let room = Room::new(devices);
+        let test_some = room.get_device(max_length - 1);
+        assert!(test_some.is_some());
+
+        // проверка-перехват паники:
+        let result = std::panic::catch_unwind(|| room.get_device(max_length + 1));
+    }
+
+    #[test]
+    fn test_get_device_mut() {
+        let thermo = SmartThermometer::default();
+        let socket = SmartSocket::default();
+
+        let devices = vec![
+            SmartDevice::Thermometer(thermo),
+            SmartDevice::Socket(socket),
+        ];
+        let max_length = devices.len();
+        let mut room = Room::new(devices);
+        let test_some = room.get_device_mut(max_length - 1);
+        assert!(test_some.is_some());
+
+        // проверка-перехват паники:
+        let result = std::panic::catch_unwind(|| room.get_device(max_length + 1));
+    }
 }
