@@ -39,18 +39,23 @@ impl<T> NonEmptyVec<T> {
     }
 
     /// Создаёт NonEmptyVec из вектора.
-    /// Если вектор пустой, функция возвращает None.
-    /// Если вектор не пустой, функция возвращает NonEmptyVec,
-    /// содержащий первый элемент вектора в поле first,
-    /// а остальные элементы вектора в поле rest.
-    pub fn from_vec(mut vec: Vec<T>) -> Option<Self> {
-        if vec.is_empty() {
-            None
-        } else {
-            let first = vec.remove(0);
-            Some(NonEmptyVec { first, rest: vec })
-        }
+    /// # Паника
+    /// Если входной вектор пустой, функция возвращает ошибку с сообщением
+    /// "Vector must not be empty".
+    pub fn from_vec(vec: Vec<T>) -> Result<Self, &'static str> {
+        let mut vec = vec;
+        vec.pop()
+            .map(|first| Self { first, rest: vec })
+            .ok_or("Vector must not be empty")
     }
+    // pub fn from_vec(mut vec: Vec<T>) -> Option<Self> {
+    //     if vec.is_empty() {
+    //         None
+    //     } else {
+    //         let first = vec.remove(0);
+    //         Some(NonEmptyVec { first, rest: vec })
+    //     }
+    // }
 
     /// Добавка элемента в вектор
     pub fn push(&mut self, value: T) {
@@ -117,6 +122,43 @@ impl<T> IndexMut<usize> for NonEmptyVec<T> {
     }
 }
 
+/// Идентификатор комнаты
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct RoomId(pub usize);
+
+/// Идентификатор устройства
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
+pub struct DeviceId(pub usize);
+
+impl From<usize> for DeviceId {
+    /// Создаёт DeviceId из целого числа.
+    /// # Параметры
+    /// * idx - целое число, которое будет использоваться как идентификатор устройства.
+    fn from(idx: usize) -> Self {
+        DeviceId(idx)
+    }
+}
+
+impl From<DeviceId> for usize {
+    /// Создаёт целое число из DeviceId.
+    /// # Параметры
+    /// * id - идентификатор устройства.
+    /// # Возвращаемое значение
+    /// Целое число = идентификатор устройства.
+    fn from(id: DeviceId) -> Self {
+        id.0
+    }
+}
+
+impl From<usize> for RoomId {
+    /// Создаёт RoomId из целого числа.
+    /// # Параметры
+    /// * idx - целое число = идентификатор комнаты.
+    fn from(idx: usize) -> Self {
+        RoomId(idx)
+    }
+}
+
 #[derive(PartialEq)]
 pub enum SmartDevice {
     Thermometer(SmartThermometer),
@@ -171,17 +213,17 @@ impl Room {
     pub fn try_from_vec(devices: Vec<SmartDevice>) -> Result<Self, String> {
         NonEmptyVec::from_vec(devices)
             .map(|devices| Room { devices })
-            .ok_or_else(|| "В комнате должно быть минимум одно устройство!".to_string())
+            .map_err(|_| "В комнате должно быть минимум одно устройство!".to_string())
     }
 
     /// Получить ссылку на устройство по индексу
-    pub fn get_device(&self, index: usize) -> Option<&SmartDevice> {
-        self.devices.get(index)
+    pub fn get_device(&self, id: DeviceId) -> Option<&SmartDevice> {
+        self.devices.get(id.0)
     }
 
     /// Получить изменяемую ссылку на устройство по индексу
-    pub fn get_device_mut(&mut self, index: usize) -> Option<&mut SmartDevice> {
-        self.devices.get_mut(index)
+    pub fn get_device_mut(&mut self, id: DeviceId) -> Option<&mut SmartDevice> {
+        self.devices.get_mut(id.0)
     }
 
     /// Выводить в стандартный вывод отчёт о всех устройствах в комнате
@@ -191,6 +233,30 @@ impl Room {
             println!("Устройство #{}", index + 1);
             device.print_state();
         }
+    }
+
+    /// Возвращает DeviceId для первого устройства в комнате.
+    pub fn first_device_id(&self) -> DeviceId {
+        DeviceId(0)
+    }
+
+    /// Возвращает DeviceId для последнего устройства в комнате.
+    pub fn last_device_id(&self) -> DeviceId {
+        DeviceId(self.devices.len() - 1)
+    }
+
+    /// Проверяет, содержит ли комната устройство с указанным идентификатором.
+    /// # Параметры
+    /// * id - идентификатор устройства.
+    /// # Возвращаемое значение
+    /// true, если комната содержит устройство с указанным идентификатором, false иначе.
+    pub fn has_device(&self, id: DeviceId) -> bool {
+        id.0 < self.devices.len()
+    }
+
+    pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, anyhow::Error> {
+        self.get_device(id)
+            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
     }
 }
 
@@ -215,17 +281,17 @@ impl House {
     pub fn try_from_vec(rooms: Vec<Room>) -> Result<Self, String> {
         NonEmptyVec::from_vec(rooms)
             .map(|rooms| House { rooms })
-            .ok_or_else(|| "В доме должна быть минимум одна комната!".to_string())
+            .map_err(|_| "В доме должна быть минимум одна комната!".to_string())
     }
 
     /// Получить ссылку на комнату по индексу
-    pub fn get_room(&self, index: usize) -> Option<&Room> {
-        self.rooms.get(index)
+    pub fn get_room(&self, id: RoomId) -> Option<&Room> {
+        self.rooms.get(id.0)
     }
 
     /// Получить изменяемую ссылку на комнату по индексу
-    pub fn get_room_mut(&mut self, index: usize) -> Option<&mut Room> {
-        self.rooms.get_mut(index)
+    pub fn get_room_mut(&mut self, id: RoomId) -> Option<&mut Room> {
+        self.rooms.get_mut(id.0)
     }
 
     pub fn print_report(&self) {
@@ -234,6 +300,41 @@ impl House {
             println!("Комната #{}", index + 1);
             room.print_room_devices();
         }
+    }
+
+    /// Возвращает RoomId для первой комнаты в доме.
+    /// # Возвращаемое значение
+    /// RoomId с индексом 0.
+    pub fn first_room_id(&self) -> RoomId {
+        RoomId(0)
+    }
+
+    /// Возвращает RoomId для последней комнаты в доме.
+    /// # Возвращаемое значение
+    /// RoomId с индексом self.rooms.len() - 1.
+    pub fn last_room_id(&self) -> RoomId {
+        RoomId(self.rooms.len() - 1)
+    }
+
+    /// Проверяет, содержит ли дом комнату с указанным идентификатором.
+    /// # Параметры
+    /// * id - идентификатор комнаты.
+    /// # Возвращаемое значение
+    /// true, если дом содержит комнату с указанным идентификатором, false иначе.
+    pub fn has_room(&self, id: RoomId) -> bool {
+        id.0 < self.rooms.len()
+    }
+
+    /// Тries to get a room by its id.
+    /// If the room is found, returns a reference to it.
+    /// If the room is not found, returns an error with the message "Room not found!".
+    /// # Parameters
+    /// * id - The id of the room to find.
+    /// # Returns
+    /// A Result containing a reference to the room if found, or an error if not found.
+    pub fn try_get_room(&self, id: RoomId) -> Result<&Room, anyhow::Error> {
+        self.get_room(id)
+            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
     }
 }
 
@@ -271,10 +372,15 @@ mod tests {
         ];
         let max_length = devices.len();
         let room = Room::try_from_vec(devices).unwrap();
-        let test_some = room.get_device(max_length - 1);
-        assert!(test_some.is_some());
-        let test_none = room.get_device(max_length + 1);
+
+        let last_id = room.last_device_id();
+        let out_of_range_id = DeviceId(room.devices.len() + 1);
+        assert!(room.has_device(last_id));
+        assert!(!room.has_device(out_of_range_id));
+        let test_none = room.get_device(out_of_range_id);
         assert!(test_none.is_none());
+        let test_some = room.get_device(last_id);
+        assert!(test_some.is_some());
     }
 
     /// Проверка, что get_device_mut возвращает Option<&mut SmartDevice> с указанным устройством, если индекс в пределах длины вектора устройств комнаты, иначе возвращает None.
@@ -289,10 +395,12 @@ mod tests {
         ];
         let max_length = devices.len();
         let mut room = Room::try_from_vec(devices).unwrap();
-        let test_some = room.get_device_mut(max_length - 1);
-        assert!(test_some.is_some());
-        let test_none = room.get_device_mut(max_length + 1);
+        let last_id = room.last_device_id();
+        let out_of_range_id = DeviceId(room.devices.len() + 1);
+        let test_none = room.get_device_mut(out_of_range_id);
         assert!(test_none.is_none());
+        let test_some = room.get_device_mut(last_id);
+        assert!(test_some.is_some());
     }
 
     /// Проверка, что try_from_vec для Room возвращает Result<Room, String> с комнатой,
@@ -341,9 +449,13 @@ mod tests {
         let rooms = vec![Room::try_from_vec(devices).unwrap()];
         let max_length = rooms.len();
         let house = House::try_from_vec(rooms).unwrap();
-        let test_some = house.get_room(max_length - 1);
+        let last_room_id = house.last_room_id();
+        let invalid_room_id = RoomId(house.rooms.len() + 1);
+        assert!(house.has_room(last_room_id));
+        assert!(!house.has_room(invalid_room_id));
+        let test_some = house.get_room(last_room_id);
         assert!(test_some.is_some());
-        let test_none = house.get_room(max_length + 1);
+        let test_none = house.get_room(invalid_room_id);
         assert!(test_none.is_none());
     }
 
@@ -360,9 +472,11 @@ mod tests {
         let rooms = vec![Room::try_from_vec(devices).unwrap()];
         let max_length = rooms.len();
         let mut house = House::try_from_vec(rooms).unwrap();
-        let test_some = house.get_room_mut(max_length - 1);
+        let last_room_id = house.last_room_id();
+        let invalid_room_id = RoomId(house.rooms.len() + 1);
+        let test_some = house.get_room_mut(last_room_id);
         assert!(test_some.is_some());
-        let test_none = house.get_room_mut(max_length + 1);
+        let test_none = house.get_room_mut(invalid_room_id);
         assert!(test_none.is_none());
     }
 }

@@ -1,6 +1,6 @@
 #![allow(unused)]
 use anyhow::{Context, Result, anyhow};
-use home::{SmartDevice, SmartSocket, SmartThermometer};
+use home::{DeviceId, RoomId, SmartDevice, SmartSocket, SmartThermometer};
 use logger::setup_tracing;
 use tracing::{debug, error, info, warn};
 
@@ -46,8 +46,11 @@ fn main() -> Result<()> {
     debug!("House report created.");
 
     info!("Выключение розетки в доме...");
-    if let Some(bed_room) = house.get_room_mut(1) {
-        if let Some(device) = bed_room.get_device_mut(2) {
+    let bedroom_id = RoomId(1);
+    let socket_id = DeviceId(2);
+
+    if let Some(bed_room) = house.get_room_mut(bedroom_id) {
+        if let Some(device) = bed_room.get_device_mut(socket_id) {
             match device {
                 SmartDevice::Socket(socket) => {
                     socket.turn_off();
@@ -62,10 +65,10 @@ fn main() -> Result<()> {
                 }
             }
         } else {
-            warn!("Device not found by index 1 in bedroom");
+            warn!("Device not found by id {:?} in bedroom", socket_id);
         }
     } else {
-        warn!("Bedroom not found at index 1");
+        warn!("Bedroom not found at id {:?}", bedroom_id);
     }
 
     println!(" ==== Обновлённый отчёт по дому ====");
