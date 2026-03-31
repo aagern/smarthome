@@ -216,6 +216,18 @@ impl Room {
             .map_err(|_| "В комнате должно быть минимум одно устройство!".to_string())
     }
 
+    /// Тries to get a device by its id.
+    pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, anyhow::Error> {
+        self.get_device(id)
+            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
+    }
+
+    /// Тries to get a mutable reference to a device by its id.
+    pub fn try_get_device_mut(&mut self, id: DeviceId) -> Result<&mut SmartDevice, anyhow::Error> {
+        self.get_device_mut(id)
+            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
+    }
+
     /// Получить ссылку на устройство по индексу
     pub fn get_device(&self, id: DeviceId) -> Option<&SmartDevice> {
         self.devices.get(id.0)
@@ -253,11 +265,6 @@ impl Room {
     pub fn has_device(&self, id: DeviceId) -> bool {
         id.0 < self.devices.len()
     }
-
-    pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, anyhow::Error> {
-        self.get_device(id)
-            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
-    }
 }
 
 pub struct House {
@@ -282,6 +289,28 @@ impl House {
         NonEmptyVec::from_vec(rooms)
             .map(|rooms| House { rooms })
             .map_err(|_| "В доме должна быть минимум одна комната!".to_string())
+    }
+
+    /// Тries to get a room by its id.
+    /// # Параметры
+    /// * id - идентификатор комнаты.
+    /// # Возвращаемое значение
+    /// Result с ссылкой на комнату, если комната с указанным идентификатором существует,
+    /// иначе результат с ошибкой "Room not found!"
+    pub fn try_get_room(&self, id: RoomId) -> Result<&Room, anyhow::Error> {
+        self.get_room(id)
+            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
+    }
+
+    /// Тries to get a mutable reference to a room by its id.
+    /// # Параметры
+    /// * id - идентификатор комнаты.
+    /// # Возвращаемое значение
+    /// Result с изменяемой ссылкой на комнату, если комната с указанным идентификатором существует,
+    /// иначе результат с ошибкой "Room not found!"
+    pub fn try_get_room_mut(&mut self, id: RoomId) -> Result<&mut Room, anyhow::Error> {
+        self.get_room_mut(id)
+            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
     }
 
     /// Получить ссылку на комнату по индексу
@@ -323,18 +352,6 @@ impl House {
     /// true, если дом содержит комнату с указанным идентификатором, false иначе.
     pub fn has_room(&self, id: RoomId) -> bool {
         id.0 < self.rooms.len()
-    }
-
-    /// Тries to get a room by its id.
-    /// If the room is found, returns a reference to it.
-    /// If the room is not found, returns an error with the message "Room not found!".
-    /// # Parameters
-    /// * id - The id of the room to find.
-    /// # Returns
-    /// A Result containing a reference to the room if found, or an error if not found.
-    pub fn try_get_room(&self, id: RoomId) -> Result<&Room, anyhow::Error> {
-        self.get_room(id)
-            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
     }
 }
 
@@ -397,10 +414,10 @@ mod tests {
         let mut room = Room::try_from_vec(devices).unwrap();
         let last_id = room.last_device_id();
         let out_of_range_id = DeviceId(room.devices.len() + 1);
-        let test_none = room.get_device_mut(out_of_range_id);
-        assert!(test_none.is_none());
-        let test_some = room.get_device_mut(last_id);
-        assert!(test_some.is_some());
+        let test_none = room.try_get_device_mut(out_of_range_id);
+        assert!(test_none.is_err());
+        let test_some = room.try_get_device_mut(last_id);
+        assert!(test_some.is_ok());
     }
 
     /// Проверка, что try_from_vec для Room возвращает Result<Room, String> с комнатой,
@@ -453,10 +470,10 @@ mod tests {
         let invalid_room_id = RoomId(house.rooms.len() + 1);
         assert!(house.has_room(last_room_id));
         assert!(!house.has_room(invalid_room_id));
-        let test_some = house.get_room(last_room_id);
-        assert!(test_some.is_some());
-        let test_none = house.get_room(invalid_room_id);
-        assert!(test_none.is_none());
+        let test_some = house.try_get_room(last_room_id);
+        assert!(test_some.is_err());
+        let test_none = house.try_get_room(invalid_room_id);
+        assert!(test_none.is_ok());
     }
 
     /// Проверка, что get_room_mut возвращает Option<&mut Room> с комнатой,
@@ -474,9 +491,9 @@ mod tests {
         let mut house = House::try_from_vec(rooms).unwrap();
         let last_room_id = house.last_room_id();
         let invalid_room_id = RoomId(house.rooms.len() + 1);
-        let test_some = house.get_room_mut(last_room_id);
-        assert!(test_some.is_some());
-        let test_none = house.get_room_mut(invalid_room_id);
-        assert!(test_none.is_none());
+        let test_some = house.try_get_room_mut(last_room_id);
+        assert!(test_some.is_ok());
+        let test_none = house.try_get_room_mut(invalid_room_id);
+        assert!(test_none.is_err());
     }
 }

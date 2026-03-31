@@ -49,8 +49,8 @@ fn main() -> Result<()> {
     let bedroom_id = RoomId(1);
     let socket_id = DeviceId(2);
 
-    if let Some(bed_room) = house.get_room_mut(bedroom_id) {
-        if let Some(device) = bed_room.get_device_mut(socket_id) {
+    if let Ok(bed_room) = house.try_get_room_mut(bedroom_id) {
+        if let Ok(device) = bed_room.try_get_device_mut(socket_id) {
             match device {
                 SmartDevice::Socket(socket) => {
                     socket.turn_off();
