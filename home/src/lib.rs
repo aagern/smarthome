@@ -38,24 +38,17 @@ impl<T> NonEmptyVec<T> {
         }
     }
 
-    /// Создаёт NonEmptyVec из вектора.
-    /// # Паника
-    /// Если входной вектор пустой, функция возвращает ошибку с сообщением
-    /// "Vector must not be empty".
-    pub fn from_vec(vec: Vec<T>) -> Result<Self, &'static str> {
-        let mut vec = vec;
-        vec.pop()
-            .map(|first| Self { first, rest: vec })
-            .ok_or("Vector must not be empty")
+    /// Creates a NonEmptyVec from a vector.
+    /// # Errors
+    /// If the input vector is empty, returns an error with the message "Vector must not be empty".
+    pub fn from_vec(mut vec: Vec<T>) -> Result<Self, &'static str> {
+        if vec.is_empty() {
+            Err("Vector must not be empty")
+        } else {
+            let first = vec.remove(0);
+            Ok(NonEmptyVec { first, rest: vec })
+        }
     }
-    // pub fn from_vec(mut vec: Vec<T>) -> Option<Self> {
-    //     if vec.is_empty() {
-    //         None
-    //     } else {
-    //         let first = vec.remove(0);
-    //         Some(NonEmptyVec { first, rest: vec })
-    //     }
-    // }
 
     /// Добавка элемента в вектор
     pub fn push(&mut self, value: T) {
@@ -471,9 +464,9 @@ mod tests {
         assert!(house.has_room(last_room_id));
         assert!(!house.has_room(invalid_room_id));
         let test_some = house.try_get_room(last_room_id);
-        assert!(test_some.is_err());
+        assert!(test_some.is_ok());
         let test_none = house.try_get_room(invalid_room_id);
-        assert!(test_none.is_ok());
+        assert!(test_none.is_err());
     }
 
     /// Проверка, что get_room_mut возвращает Option<&mut Room> с комнатой,
