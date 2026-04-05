@@ -1,8 +1,7 @@
-#![allow(unused)]
-use anyhow::{Context, Result, anyhow};
+use anyhow::{Result, anyhow};
 use home::{DeviceId, RoomId, SmartDevice, SmartSocket, SmartThermometer};
 use logger::setup_tracing;
-use tracing::{debug, error, info, warn};
+use tracing::{debug, info, warn};
 
 fn main() -> Result<()> {
     setup_tracing(); // common logger init

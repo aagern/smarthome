@@ -25,7 +25,7 @@ impl SmartThermometer {
     /// * celsius - the temperature in Celsius to convert.
     /// # Returns
     /// The temperature in Fahrenheit.
-    pub fn celsius_to_fahrenheit(&self, celsius: f32) -> f32 {
+    pub fn celsius_to_fahrenheit(celsius: f32) -> f32 {
         celsius * 9.0 / 5.0 + 32.0
     }
 }

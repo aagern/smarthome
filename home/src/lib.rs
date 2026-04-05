@@ -1,7 +1,6 @@
-#![allow(unused)]
 use std::ops::{Index, IndexMut};
 use thiserror::Error;
-use tracing::{debug, error, info, warn};
+use tracing::debug;
 
 #[derive(Error, Debug)]
 pub enum InputError {
@@ -177,11 +176,19 @@ impl SmartDevice {
                     "Текущая температура: {:.1}°C",
                     termo.get_current_temperature()
                 );
-                println!("Статус: Активен")
+                println!("Статус: Активен");
+                debug!(
+                    "Запрос температуры -> текущая температура: {:.1}°C",
+                    termo.get_current_temperature()
+                );
             }
             SmartDevice::Socket(socket) => {
                 println!("- Розетка -");
                 println!("Текущая мощность: {:.1}Вт.", socket.get_current_power());
+                debug!(
+                    "Запрос мощности -> текущая мощность: {:.1}Вт.",
+                    socket.get_current_power()
+                );
                 println!(
                     "Статус: {}",
                     if socket.is_on() {
@@ -221,11 +228,13 @@ impl Room {
 
     /// Тries to get a device by its id.
     pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, InputError> {
+        debug!("try_get_device {:?}", id);
         self.get_device(id).ok_or(InputError::DeviceNotFound)
     }
 
     /// Тries to get a mutable reference to a device by its id.
     pub fn try_get_device_mut(&mut self, id: DeviceId) -> Result<&mut SmartDevice, InputError> {
+        debug!("try_get_device_mut {:?}", id);
         self.get_device_mut(id).ok_or(InputError::DeviceNotFound)
     }
 
@@ -245,7 +254,9 @@ impl Room {
         for (index, device) in self.devices.iter().enumerate() {
             println!("Устройство #{}", index + 1);
             device.print_state();
+            debug!("Устройство #{} отчёт создан.", index + 1);
         }
+        debug!("Отчёт о комнате создан.");
     }
 
     /// Возвращает DeviceId для первого устройства в комнате.
@@ -299,6 +310,7 @@ impl House {
     /// Result с ссылкой на комнату, если комната с указанным идентификатором существует,
     /// иначе результат с ошибкой "Room not found!"
     pub fn try_get_room(&self, id: RoomId) -> Result<&Room, InputError> {
+        debug!("try_get_room {:?}", id);
         self.get_room(id).ok_or(InputError::RoomNotFound)
     }
 
@@ -309,6 +321,7 @@ impl House {
     /// Result с изменяемой ссылкой на комнату, если комната с указанным идентификатором существует,
     /// иначе результат с ошибкой "Room not found!"
     pub fn try_get_room_mut(&mut self, id: RoomId) -> Result<&mut Room, InputError> {
+        debug!("try_get_room_mut {:?}", id);
         self.get_room_mut(id).ok_or(InputError::RoomNotFound)
     }
 
@@ -327,7 +340,9 @@ impl House {
         for (index, room) in self.rooms.iter().enumerate() {
             println!("Комната #{}", index + 1);
             room.print_room_devices();
+            debug!("Отчёт о комнате #{} создан.", index + 1);
         }
+        debug!("Отчёт о доме создан.");
     }
 
     /// Возвращает RoomId для первой комнаты в доме.
