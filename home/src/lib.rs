@@ -286,10 +286,10 @@ impl House {
     /// # Паника
     /// Если входной вектор пустой, функция возвращает ошибку с сообщением
     /// "В доме должна быть минимум одна комната!".
-    pub fn try_from_vec(rooms: Vec<Room>) -> Result<Self, String> {
+    pub fn try_from_vec(rooms: Vec<Room>) -> Result<Self, InputError> {
         NonEmptyVec::from_vec(rooms)
             .map(|rooms| House { rooms })
-            .map_err(|_| "В доме должна быть минимум одна комната!".to_string())
+            .map_err(|_| InputError::RoomNotFound)
     }
 
     /// Тries to get a room by its id.
@@ -298,9 +298,8 @@ impl House {
     /// # Возвращаемое значение
     /// Result с ссылкой на комнату, если комната с указанным идентификатором существует,
     /// иначе результат с ошибкой "Room not found!"
-    pub fn try_get_room(&self, id: RoomId) -> Result<&Room, anyhow::Error> {
-        self.get_room(id)
-            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
+    pub fn try_get_room(&self, id: RoomId) -> Result<&Room, InputError> {
+        self.get_room(id).ok_or(InputError::RoomNotFound)
     }
 
     /// Тries to get a mutable reference to a room by its id.
@@ -309,9 +308,8 @@ impl House {
     /// # Возвращаемое значение
     /// Result с изменяемой ссылкой на комнату, если комната с указанным идентификатором существует,
     /// иначе результат с ошибкой "Room not found!"
-    pub fn try_get_room_mut(&mut self, id: RoomId) -> Result<&mut Room, anyhow::Error> {
-        self.get_room_mut(id)
-            .ok_or_else(|| anyhow::anyhow!("Room not found!"))
+    pub fn try_get_room_mut(&mut self, id: RoomId) -> Result<&mut Room, InputError> {
+        self.get_room_mut(id).ok_or(InputError::RoomNotFound)
     }
 
     /// Получить ссылку на комнату по индексу
