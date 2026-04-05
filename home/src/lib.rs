@@ -401,7 +401,6 @@ mod tests {
             SmartDevice::Thermometer(thermo),
             SmartDevice::Socket(socket),
         ];
-        let max_length = devices.len();
         let room = Room::try_from_vec(devices).unwrap();
 
         let last_id = room.last_device_id();
@@ -424,7 +423,6 @@ mod tests {
             SmartDevice::Thermometer(thermo),
             SmartDevice::Socket(socket),
         ];
-        let max_length = devices.len();
         let mut room = Room::try_from_vec(devices).unwrap();
         let last_id = room.last_device_id();
         let out_of_range_id = DeviceId(room.devices.len() + 1);
@@ -478,7 +476,6 @@ mod tests {
             SmartDevice::Socket(socket),
         ];
         let rooms = vec![Room::try_from_vec(devices).unwrap()];
-        let max_length = rooms.len();
         let house = House::try_from_vec(rooms).unwrap();
         let last_room_id = house.last_room_id();
         let invalid_room_id = RoomId(house.rooms.len() + 1);
@@ -501,7 +498,6 @@ mod tests {
             SmartDevice::Socket(socket),
         ];
         let rooms = vec![Room::try_from_vec(devices).unwrap()];
-        let max_length = rooms.len();
         let mut house = House::try_from_vec(rooms).unwrap();
         let last_room_id = house.last_room_id();
         let invalid_room_id = RoomId(house.rooms.len() + 1);

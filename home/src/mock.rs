@@ -1,5 +1,4 @@
 use rand::prelude::*;
-use std::ops::DerefMut;
 
 #[derive(PartialEq)]
 pub struct SmartThermometer {
