@@ -1,4 +1,5 @@
 use rand::prelude::*;
+use std::ops::DerefMut;
 
 #[derive(PartialEq)]
 pub struct SmartThermometer {
@@ -30,41 +31,66 @@ impl SmartThermometer {
 }
 
 #[derive(PartialEq)]
+pub enum SocketState {
+    On { power: f32 },
+    Off,
+}
+
+#[derive(PartialEq)]
 pub struct SmartSocket {
-    is_on: bool,
-    power: f32, // watts
+    state: SocketState,
 }
 
 impl Default for SmartSocket {
     /// Creates a new SmartSocket with default values: is_on = true, power = a random value between 1000.0 and 2000.0 watts.
     fn default() -> Self {
         SmartSocket {
-            is_on: true,
-            power: rand::rng().random_range(1000.0..2000.0),
+            state: SocketState::On {
+                power: rand::rng().random_range(1000.0..2000.0),
+            },
         }
     }
 }
 
 impl SmartSocket {
     /// Returns the current power of the smart socket in watts.
-    /// If the socket is turned off, this method will return 0.0.
+    /// If the socket is off, returns 0.0.
+    /// If the socket is on, returns the current power.
     pub fn get_current_power(&self) -> f32 {
-        self.power
+        match self.state {
+            SocketState::Off => 0.0,
+            SocketState::On { power } => power,
+        }
     }
 
     /// Turns the smart socket on.
+    /// If the socket is off, sets its power to a random value between 1000.0 and 2000.0 watts.
+    /// If the socket is already on, does nothing.
+    /// # Note
+    /// A smart socket can only be turned on if it is currently off.
     pub fn turn_on(&mut self) {
-        self.is_on = true;
+        if let SocketState::Off = self.state {
+            self.state = SocketState::On {
+                power: rand::rng().random_range(1000.0..2000.0),
+            };
+        }
     }
 
-    /// Turns the smart socket off and resets its power to 0.0.
+    /// Turns the smart socket off.
+    /// If the socket is on, sets its state to Off and its power to 0.0.
+    /// If the socket is already off, does nothing.
+    /// # Note
+    /// A smart socket can only be turned off if it is currently on.
     pub fn turn_off(&mut self) {
-        self.is_on = false;
-        self.power = 0.0;
+        self.state = SocketState::Off;
     }
 
     /// Returns true if the smart socket is on, false otherwise.
     pub fn is_on(&self) -> bool {
-        self.is_on
+        //matches!(self.state, SocketState::On { .. })
+        match self.state {
+            SocketState::Off => false,
+            SocketState::On { .. } => true,
+        }
     }
 }

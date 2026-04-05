@@ -1,7 +1,17 @@
 #![allow(unused)]
-use anyhow::{Context, Result};
 use std::ops::{Index, IndexMut};
+use thiserror::Error;
 use tracing::{debug, error, info, warn};
+
+#[derive(Error, Debug)]
+pub enum InputError {
+    #[error("Device not found!")]
+    DeviceNotFound,
+    #[error("Room not found!")]
+    RoomNotFound, // TODO Usage!
+    #[error("Data cannot be empty!")]
+    DataEmpty,
+}
 
 // Реальные показания с датчиков
 #[cfg(not(feature = "mock"))]
@@ -41,9 +51,9 @@ impl<T> NonEmptyVec<T> {
     /// Creates a NonEmptyVec from a vector.
     /// # Errors
     /// If the input vector is empty, returns an error with the message "Vector must not be empty".
-    pub fn from_vec(mut vec: Vec<T>) -> Result<Self, &'static str> {
+    pub fn from_vec(mut vec: Vec<T>) -> Result<Self, InputError> {
         if vec.is_empty() {
-            Err("Vector must not be empty")
+            Err(InputError::DataEmpty)
         } else {
             let first = vec.remove(0);
             Ok(NonEmptyVec { first, rest: vec })
@@ -203,22 +213,20 @@ impl Room {
     /// # Паника
     /// Если входной вектор пустой, функция возвращает ошибку с сообщением
     /// "В комнате должно быть минимум одно устройство!".
-    pub fn try_from_vec(devices: Vec<SmartDevice>) -> Result<Self, String> {
+    pub fn try_from_vec(devices: Vec<SmartDevice>) -> Result<Self, InputError> {
         NonEmptyVec::from_vec(devices)
             .map(|devices| Room { devices })
-            .map_err(|_| "В комнате должно быть минимум одно устройство!".to_string())
+            .map_err(|_| InputError::DataEmpty)
     }
 
     /// Тries to get a device by its id.
-    pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, anyhow::Error> {
-        self.get_device(id)
-            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
+    pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, InputError> {
+        self.get_device(id).ok_or(InputError::DeviceNotFound)
     }
 
     /// Тries to get a mutable reference to a device by its id.
-    pub fn try_get_device_mut(&mut self, id: DeviceId) -> Result<&mut SmartDevice, anyhow::Error> {
-        self.get_device_mut(id)
-            .ok_or_else(|| anyhow::anyhow!("Device not found!"))
+    pub fn try_get_device_mut(&mut self, id: DeviceId) -> Result<&mut SmartDevice, InputError> {
+        self.get_device_mut(id).ok_or(InputError::DeviceNotFound)
     }
 
     /// Получить ссылку на устройство по индексу
