@@ -70,6 +70,32 @@ fn main() -> Result<()> {
         warn!("Bedroom not found at id {:?}", bedroom_id);
     }
 
+    info!("Включение розетки в доме...");
+    let bedroom_id = RoomId(1);
+    let socket_id = DeviceId(2);
+
+    if let Ok(bed_room) = house.try_get_room_mut(bedroom_id) {
+        if let Ok(device) = bed_room.try_get_device_mut(socket_id) {
+            match device {
+                SmartDevice::Socket(socket) => {
+                    socket.turn_on();
+                    info!("Socket in room turned ON!");
+                    debug!(
+                        "Текущая мощность розетки: {}Вт.",
+                        socket.get_current_power()
+                    );
+                }
+                SmartDevice::Thermometer(_) => {
+                    warn!("Thermometer found, but socket expected at index");
+                }
+            }
+        } else {
+            warn!("Device not found by id {:?} in bedroom", socket_id);
+        }
+    } else {
+        warn!("Bedroom not found at id {:?}", bedroom_id);
+    }
+
     println!(" ==== Обновлённый отчёт по дому ====");
     house.print_report();
     debug!("House report created.");
