@@ -1,5 +1,5 @@
 use anyhow::{Result, anyhow};
-use home::{DeviceId, RoomId, SmartDevice, SmartSocket, SmartThermometer};
+use lib::{DeviceId, RoomId, SmartDevice, SmartSocket, SmartThermometer};
 use logger::setup_tracing;
 use tracing::{debug, info, warn};
 
