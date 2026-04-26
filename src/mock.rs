@@ -1,6 +1,6 @@
 use rand::prelude::*;
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct SmartThermometer {
     current_temperature: f32,
 }
@@ -34,13 +34,13 @@ impl SmartThermometer {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum SocketState {
     On { power: f32 },
     Off,
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub struct SmartSocket {
     state: SocketState,
 }

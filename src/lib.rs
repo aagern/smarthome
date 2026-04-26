@@ -29,6 +29,8 @@ pub use mock::{SmartSocket, SmartThermometer};
 
 /// Тип непустой вектор:
 /// для исключения валидации.
+
+#[derive(Debug)]
 pub struct NonEmptyVec<T> {
     first: T,
     rest: Vec<T>,
@@ -188,6 +190,21 @@ impl fmt::Display for SmartDevice {
     }
 }
 
+impl fmt::Debug for SmartDevice {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        match self {
+            SmartDevice::Thermometer(t) => {
+                debug!("SmartDevice::Thermometer = {:?}", t);
+                write!(f, "T: {:?}", t)
+            }
+            SmartDevice::Socket(s) => {
+                debug!("SmartDevice::Socket = {:?}", s);
+                write!(f, "S: {:?}", s)
+            }
+        }
+    }
+}
+
 impl fmt::Display for Room {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "== Устройства комнаты ==")?;
@@ -203,6 +220,13 @@ impl fmt::Display for Room {
     }
 }
 
+impl fmt::Debug for Room {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        debug!("Room {{ devices: {:?} }}", self.devices);
+        write!(f, "Room {{ devices: {:?} }}", self.devices)
+    }
+}
+
 impl fmt::Display for House {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "== Отчёт о доме ==")?;
@@ -215,6 +239,13 @@ impl fmt::Display for House {
         }
         debug!("Отчёт о доме создан.");
         Ok(())
+    }
+}
+
+impl fmt::Debug for House {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        debug!("House {{ rooms: {:?} }}", self.rooms);
+        write!(f, "House {{ rooms: {:?} }}", self.rooms)
     }
 }
 

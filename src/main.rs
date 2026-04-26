@@ -36,7 +36,7 @@ fn main() -> Result<()> {
         .map_err(|err| anyhow!("Комната не создана: {}", err))?;
 
     info!("Bedroom created.");
-    println!("{}", bed_room);
+    println!("{:?}", bed_room); // Debug test
     debug!("Room report created.");
 
     let mut house = House::new(living_room, vec![bed_room]);
