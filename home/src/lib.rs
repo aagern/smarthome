@@ -1,3 +1,4 @@
+use std::fmt;
 use std::ops::{Index, IndexMut};
 use thiserror::Error;
 use tracing::debug;
@@ -167,38 +168,55 @@ pub enum SmartDevice {
     Socket(SmartSocket),
 }
 
-impl SmartDevice {
-    pub fn print_state(&self) {
+impl fmt::Display for SmartDevice {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            SmartDevice::Thermometer(termo) => {
-                println!("- Термометр -");
-                println!(
-                    "Текущая температура: {:.1}°C",
-                    termo.get_current_temperature()
-                );
-                println!("Статус: Активен");
-                debug!(
-                    "Запрос температуры -> текущая температура: {:.1}°C",
-                    termo.get_current_temperature()
-                );
+            SmartDevice::Thermometer(t) => {
+                write!(
+                    f,
+                    "- Термометр -\nТекущая температура: {:.1}°C\nСтатус: Активен",
+                    t.get_current_temperature()
+                )
             }
-            SmartDevice::Socket(socket) => {
-                println!("- Розетка -");
-                println!("Текущая мощность: {:.1}Вт.", socket.get_current_power());
-                debug!(
-                    "Запрос мощности -> текущая мощность: {:.1}Вт.",
-                    socket.get_current_power()
-                );
-                println!(
-                    "Статус: {}",
-                    if socket.is_on() {
-                        "Вкл."
-                    } else {
-                        "Выкл."
-                    }
+            SmartDevice::Socket(s) => {
+                write!(
+                    f,
+                    "- Розетка -\nТекущая мощность: {:.1}Вт.\nСтатус: {}",
+                    s.get_current_power(),
+                    if s.is_on() { "Вкл." } else { "Выкл." }
                 )
             }
         }
+    }
+}
+
+impl fmt::Display for Room {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "== Устройства комнаты ==")?;
+        for (index, device) in self.devices.iter().enumerate() {
+            writeln!(f, "Устройство #{}", index + 1)?;
+            write!(f, "{}", device)?;
+            if index < self.devices.len() - 1 {
+                writeln!(f)?;
+            }
+        }
+        debug!("Отчёт о комнате создан.");
+        Ok(())
+    }
+}
+
+impl fmt::Display for House {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "== Отчёт о доме ==")?;
+        for (index, room) in self.rooms.iter().enumerate() {
+            writeln!(f, "Комната #{}", index + 1)?;
+            write!(f, "{}", room)?;
+            if index < self.rooms.len() - 1 {
+                writeln!(f)?;
+            }
+        }
+        debug!("Отчёт о доме создан.");
+        Ok(())
     }
 }
 
@@ -248,17 +266,6 @@ impl Room {
         self.devices.get_mut(id.0)
     }
 
-    /// Выводить в стандартный вывод отчёт о всех устройствах в комнате
-    pub fn print_room_devices(&self) {
-        println!("== Устройства комнаты ==");
-        for (index, device) in self.devices.iter().enumerate() {
-            println!("Устройство #{}", index + 1);
-            device.print_state();
-            debug!("Устройство #{} отчёт создан.", index + 1);
-        }
-        debug!("Отчёт о комнате создан.");
-    }
-
     /// Возвращает DeviceId для первого устройства в комнате.
     pub fn first_device_id(&self) -> DeviceId {
         DeviceId(0)
@@ -280,7 +287,7 @@ impl Room {
 }
 
 pub struct House {
-    rooms: NonEmptyVec<Room>,
+    pub rooms: NonEmptyVec<Room>,
 }
 
 impl House {
@@ -333,16 +340,6 @@ impl House {
     /// Получить изменяемую ссылку на комнату по индексу
     pub fn get_room_mut(&mut self, id: RoomId) -> Option<&mut Room> {
         self.rooms.get_mut(id.0)
-    }
-
-    pub fn print_report(&self) {
-        println!("== Отчёт о доме ==");
-        for (index, room) in self.rooms.iter().enumerate() {
-            println!("Комната #{}", index + 1);
-            room.print_room_devices();
-            debug!("Отчёт о комнате #{} создан.", index + 1);
-        }
-        debug!("Отчёт о доме создан.");
     }
 
     /// Возвращает RoomId для первой комнаты в доме.
