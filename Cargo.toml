@@ -10,6 +10,9 @@ tracing-appender.workspace = true
 tracing-subscriber.workspace = true
 
 [features]
+default = ["mock"] # включить флаг mock по-умолчанию
+mock = ["rand"] # использовать рандимозатор только при включенном флаге
+mock-persistent = ["rand"]
 debug = [] # проверка концепции feature flags (example/mocks.rs)
 
 [workspace.dependencies]
