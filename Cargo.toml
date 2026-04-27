@@ -1,26 +1,23 @@
 [package]
-name = "projlogged"
+name = "smarthouse"
 version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-anyhow.workspace = true
-tracing.workspace = true
-tracing-appender.workspace = true
-tracing-subscriber.workspace = true
-
-[features]
-debug = [] # проверка концепции feature flags (example/mocks.rs)
-
-[workspace.dependencies]
 anyhow = "1.0.102"
 tracing = "0.1.44"
-tracing-appender = "0.2.4"
+tracing-appender = "0.2.5"
 tracing-subscriber = { version = "0.3.23", features = ["json"] }
+rand = { version = "0.10.1", optional = true }
+thiserror = "2.0.18"
+
+[features]
+default = ["mock"] # включить флаг mock по-умолчанию
+mock = ["rand"] # использовать рандимозатор только при включенном флаге
+mock-persistent = ["rand"]
+debug = [] # проверка концепции feature flags (example/mocks.rs)
+
 
 [profile.dev]
 debug = "line-tables-only"
-
-[workspace]
-members = ["app", "home","logger"]
 

@@ -17,7 +17,7 @@ pub enum InputError {
 #[cfg(not(feature = "mock"))]
 mod real;
 #[cfg(not(feature = "mock"))]
-use real::SmartSocket;
+pub use real::SmartSocket;
 #[cfg(not(feature = "mock"))]
 pub use real::SmartThermometer;
 
@@ -25,9 +25,7 @@ pub use real::SmartThermometer;
 #[cfg(feature = "mock")]
 mod mock;
 #[cfg(feature = "mock")]
-pub use mock::SmartSocket;
-#[cfg(feature = "mock")]
-pub use mock::SmartThermometer;
+pub use mock::{SmartSocket, SmartThermometer};
 
 /// Тип непустой вектор:
 /// для исключения валидации.

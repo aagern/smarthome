@@ -8,13 +8,18 @@ pub struct SmartThermometer {
 impl Default for SmartThermometer {
     /// Creates a new SmartThermometer with a random current temperature between -30.0 and 50.0 degrees Celsius.
     fn default() -> Self {
-        SmartThermometer {
-            current_temperature: rand::rng().random_range(-30.0..50.0),
-        }
+        Self::new(rand::rng().random_range(-30.0..50.0))
     }
 }
 
 impl SmartThermometer {
+    /// Creates a new SmartThermometer with the specified initial temperature in Celsius.
+    pub fn new(initial_temp: f32) -> Self {
+        SmartThermometer {
+            current_temperature: initial_temp,
+        }
+    }
+
     /// Returns the current temperature of the thermometer in Celsius.
     pub fn get_current_temperature(&self) -> f32 {
         self.current_temperature
@@ -43,15 +48,17 @@ pub struct SmartSocket {
 impl Default for SmartSocket {
     /// Creates a new SmartSocket with default values: is_on = true, power = a random value between 1000.0 and 2000.0 watts.
     fn default() -> Self {
-        SmartSocket {
-            state: SocketState::On {
-                power: rand::rng().random_range(1000.0..2000.0),
-            },
-        }
+        Self::new(rand::rng().random_range(1000.0..2000.0))
     }
 }
 
 impl SmartSocket {
+    /// Creates a new SmartSocket with the specified state.
+    pub fn new(watts: f32) -> Self {
+        SmartSocket {
+            state: SocketState::On { power: watts },
+        }
+    }
     /// Returns the current power of the smart socket in watts.
     /// If the socket is off, returns 0.0.
     /// If the socket is on, returns the current power.

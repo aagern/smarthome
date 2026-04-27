@@ -9,13 +9,17 @@ pub struct SmartThermometer {
 impl Default for SmartThermometer {
     /// Creates a new SmartThermometer with a default current temperature of 36.6.
     fn default() -> Self {
-        SmartThermometer {
-            current_temperature: TEMPERATURE,
-        }
+        Self::new(TEMPERATURE)
     }
 }
 
 impl SmartThermometer {
+    /// Creates a new SmartThermometer with the specified initial temperature in Celsius.
+    pub fn new(initial_temp: f32) -> Self {
+        SmartThermometer {
+            current_temperature: initial_temp,
+        }
+    }
     /// Returns the current temperature of the thermometer in Celsius.
     pub fn get_current_temperature(&self) -> f32 {
         self.current_temperature
@@ -31,22 +35,29 @@ impl SmartThermometer {
 }
 
 #[derive(PartialEq)]
+pub enum SocketState {
+    On { power: f32 },
+    Off,
+}
+
+#[derive(PartialEq)]
 pub struct SmartSocket {
-    is_on: bool,
-    power: f32, // watts
+    state: SocketState,
 }
 
 impl Default for SmartSocket {
     /// Creates a new SmartSocket with default values: is_on = true, power = 2000.0.
     fn default() -> Self {
-        SmartSocket {
-            is_on: true,
-            power: POWER,
-        }
+        Self::new(POWER)
     }
 }
 
 impl SmartSocket {
+    pub fn new(watts: f32) -> Self {
+        SmartSocket {
+            state: SocketState::On { power: watts },
+        }
+    }
     /// Returns the current power of the smart socket in watts.
     pub fn get_current_power(&self) -> f32 {
         self.power
