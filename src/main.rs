@@ -1,10 +1,10 @@
+mod logger;
 use anyhow::{Result, anyhow};
-use home::{DeviceId, RoomId, SmartDevice, SmartSocket, SmartThermometer};
-use logger::setup_tracing;
+use smarthouse::{DeviceId, House, Room, RoomId, SmartDevice, SmartSocket, SmartThermometer};
 use tracing::{debug, info, warn};
 
 fn main() -> Result<()> {
-    setup_tracing(); // common logger init
+    logger::setup_tracing(); // common logger init
     debug!("Logger initialized. App started.");
 
     debug!("Device init.");
@@ -25,23 +25,26 @@ fn main() -> Result<()> {
         SmartDevice::Socket(socket2),
     ];
 
-    let living_room = home::Room::try_from_vec(living_room_devices)
+    let living_room = Room::try_from_vec(living_room_devices)
         .map_err(|err| anyhow!("Комната не создана: {}", err))?;
 
     info!("Living Room created.");
-    living_room.print_room_devices();
+    println!("{}", living_room);
     debug!("Room report created.");
 
-    let bed_room = home::Room::try_from_vec(bed_room_devices)
+    let bed_room = Room::try_from_vec(bed_room_devices)
         .map_err(|err| anyhow!("Комната не создана: {}", err))?;
 
     info!("Bedroom created.");
-    bed_room.print_room_devices();
+    println!("{}", bed_room);
     debug!("Room report created.");
 
-    let mut house = home::House::new(living_room, vec![bed_room]);
+    let mut house = House::new(living_room, vec![bed_room]);
     info!("House created.");
-    house.print_report();
+    for (i, room) in house.rooms.iter().enumerate() {
+        println!("Room #{}: {}", i + 1, room);
+    }
+    //house.print_report();
     debug!("House report created.");
 
     info!("Выключение розетки в доме...");
@@ -97,7 +100,10 @@ fn main() -> Result<()> {
     }
 
     println!(" ==== Обновлённый отчёт по дому ====");
-    house.print_report();
+    for (i, room) in house.rooms.iter().enumerate() {
+        println!("Room #{}: {}", i + 1, room);
+    }
+    //house.print_report();
     debug!("House report created.");
 
     debug!("App finished.");
