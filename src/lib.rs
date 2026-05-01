@@ -29,7 +29,6 @@ pub use mock::{SmartSocket, SmartThermometer};
 
 /// Тип непустой вектор:
 /// для исключения валидации.
-
 #[derive(Debug)]
 pub struct NonEmptyVec<T> {
     first: T,
