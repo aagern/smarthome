@@ -1,5 +1,6 @@
 mod house;
 mod room;
 
-//pub use house::House;
+// Data types based on HashMap
+pub use house::House;
 pub use room::Room;

@@ -58,6 +58,7 @@ impl Room {
 // Room formatting
 impl fmt::Display for Room {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        writeln!(f, "==== Room Report ====")?;
         for (name, device) in &self.devices {
             writeln!(f, "Name: {} | Device: {}", name, device)?;
         }

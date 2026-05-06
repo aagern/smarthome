@@ -57,6 +57,7 @@ impl House {
     }
 }
 
+// House formatting
 impl fmt::Display for House {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "==== House Report ====")?;
@@ -65,5 +66,13 @@ impl fmt::Display for House {
         }
         debug!("Creted a report for a house.");
         Ok(())
+    }
+}
+
+// House debug data
+impl fmt::Debug for House {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        debug!("House {{ rooms: {:?} }}", self.rooms);
+        write!(f, "House {{ rooms: {:?} }}", self.rooms)
     }
 }
