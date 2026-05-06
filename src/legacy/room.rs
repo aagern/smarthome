@@ -4,7 +4,7 @@ use std::fmt;
 use tracing::debug;
 
 pub struct Room {
-    devices: NonEmptyVec<SmartDevice>,
+    pub devices: NonEmptyVec<SmartDevice>,
 }
 
 impl Room {
