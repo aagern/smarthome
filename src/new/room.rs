@@ -1,4 +1,3 @@
-#![allow(unused)]
 use crate::{InputError, SmartDevice};
 use std::collections::HashMap;
 use std::fmt;
@@ -15,5 +14,63 @@ impl Room {
         let mut devices = HashMap::new();
         devices.insert(device_name, device);
         Room { devices }
+    }
+
+    // Add device
+    pub fn add_device(&mut self, name: String, device: SmartDevice) -> Option<SmartDevice> {
+        self.devices.insert(name, device)
+    }
+
+    // Remove device. Returns removed device. If there is only 1 device, returns error
+    pub fn remove_device(&mut self, name: String) -> Result<SmartDevice, InputError> {
+        if self.devices.len() == 1 && self.devices.contains_key(&name) {
+            return Err(InputError::DataEmpty);
+        }
+        self.devices.remove(&name).ok_or(InputError::DeviceNotFound)
+    }
+
+    // Get immutable link to device
+    pub fn get_device(&self, name: String) -> Option<&SmartDevice> {
+        self.devices.get(&name)
+    }
+
+    // Get mutable link to device
+    pub fn get_device_mut(&mut self, name: String) -> Option<&mut SmartDevice> {
+        self.devices.get_mut(&name)
+    }
+
+    // Check if room has device
+    pub fn has_device(&self, name: &str) -> bool {
+        self.devices.contains_key(name)
+    }
+
+    // Get number of devices
+    pub fn device_count(&self) -> usize {
+        self.devices.len()
+    }
+
+    // Iterate over devices
+    pub fn iter_devices(&self) -> impl Iterator<Item = (&String, &SmartDevice)> {
+        self.devices.iter()
+    }
+}
+
+// Room formatting
+impl fmt::Display for Room {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        for (name, device) in &self.devices {
+            writeln!(f, "Name: {} | Device: {}", name, device)?;
+        }
+        debug!("Creted a report for a room.");
+        Ok(())
+    }
+}
+
+// Room debug data
+impl fmt::Debug for Room {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        debug!("Room {{ devices: {:?} }}", self.devices);
+        write!(f, "Room {{ devices: {:?} }}", self.devices)?;
+        Ok(())
     }
 }
