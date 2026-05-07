@@ -112,12 +112,14 @@ pub mod new;
 pub use legacy::{House, Room};
 // pub use new::{Room, House}; // переключить на новую реализацию, когда готово
 
+// Преобразование SmartDevice в универсальный тип
 impl From<SmartSocket> for SmartDevice {
     fn from(s: SmartSocket) -> Self {
         SmartDevice::Socket(s)
     }
 }
 
+// Преобразование SmartThermometer в универсальный тип
 impl From<SmartThermometer> for SmartDevice {
     fn from(t: SmartThermometer) -> Self {
         SmartDevice::Thermometer(t)
