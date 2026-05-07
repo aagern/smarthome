@@ -112,6 +112,18 @@ pub mod new;
 pub use legacy::{House, Room};
 // pub use new::{Room, House}; // переключить на новую реализацию, когда готово
 
+impl From<SmartSocket> for SmartDevice {
+    fn from(s: SmartSocket) -> Self {
+        SmartDevice::Socket(s)
+    }
+}
+
+impl From<SmartThermometer> for SmartDevice {
+    fn from(t: SmartThermometer) -> Self {
+        SmartDevice::Thermometer(t)
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
