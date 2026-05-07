@@ -18,9 +18,6 @@ impl Room {
 
     // Constructor from vector of devices for fast init. Returns error if vector is empty
     pub fn try_from_vec(devices: Vec<(String, SmartDevice)>) -> Result<Self, InputError> {
-        if devices.is_empty() {
-            return Err(InputError::DataEmpty);
-        }
         Ok(Room {
             devices: devices.into_iter().collect(),
         })

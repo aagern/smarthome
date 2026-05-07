@@ -18,6 +18,12 @@ impl House {
         House { rooms }
     }
 
+    // Constructor of empty house
+    pub fn new_empty() -> Self {
+        let rooms = HashMap::new();
+        House { rooms }
+    }
+
     // Add room. Returns added room
     pub fn add_room(&mut self, room_name: String, room: Room) -> Option<Room> {
         self.rooms.insert(room_name, room)
