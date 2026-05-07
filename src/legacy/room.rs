@@ -30,13 +30,15 @@ impl Room {
     /// Тries to get a device by its id.
     pub fn try_get_device(&self, id: DeviceId) -> Result<&SmartDevice, InputError> {
         debug!("try_get_device {:?}", id);
-        self.get_device(id).ok_or(InputError::DeviceNotFound)
+        self.get_device(id)
+            .ok_or(InputError::DeviceNotFound(format!("{:?}", id)))
     }
 
     /// Тries to get a mutable reference to a device by its id.
     pub fn try_get_device_mut(&mut self, id: DeviceId) -> Result<&mut SmartDevice, InputError> {
         debug!("try_get_device_mut {:?}", id);
-        self.get_device_mut(id).ok_or(InputError::DeviceNotFound)
+        self.get_device_mut(id)
+            .ok_or(InputError::DeviceNotFound(format!("{:?}", id)))
     }
 
     /// Получить ссылку на устройство по индексу

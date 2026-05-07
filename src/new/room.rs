@@ -36,7 +36,9 @@ impl Room {
         if self.devices.len() == 1 && self.devices.contains_key(&name) {
             return Err(InputError::DataEmpty);
         }
-        self.devices.remove(&name).ok_or(InputError::DeviceNotFound)
+        self.devices
+            .remove(&name)
+            .ok_or(InputError::DeviceNotFound(name))
     }
 
     // Get immutable link to device

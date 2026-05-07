@@ -26,9 +26,11 @@ impl House {
     // Remove room. Returns removed room. If there is only 1 room, returns error
     pub fn remove_room(&mut self, room_name: &str) -> Result<Room, InputError> {
         if self.rooms.len() == 1 && self.rooms.contains_key(room_name) {
-            return Err(InputError::RoomNotFound);
+            return Err(InputError::RoomNotFound(room_name.to_string()));
         }
-        self.rooms.remove(room_name).ok_or(InputError::RoomNotFound)
+        self.rooms
+            .remove(room_name)
+            .ok_or(InputError::RoomNotFound(room_name.to_string()))
     }
 
     // Get immutable link to room

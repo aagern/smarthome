@@ -25,7 +25,7 @@ impl House {
     pub fn try_from_vec(rooms: Vec<Room>) -> Result<Self, InputError> {
         NonEmptyVec::from_vec(rooms)
             .map(|rooms| House { rooms })
-            .map_err(|_| InputError::RoomNotFound)
+            .map_err(|_| InputError::RoomNotFound("No rooms in house!".to_string()))
     }
 
     /// Тries to get a room by its id.
@@ -36,7 +36,8 @@ impl House {
     /// иначе результат с ошибкой "Room not found!"
     pub fn try_get_room(&self, id: RoomId) -> Result<&Room, InputError> {
         debug!("try_get_room {:?}", id);
-        self.get_room(id).ok_or(InputError::RoomNotFound)
+        self.get_room(id)
+            .ok_or(InputError::RoomNotFound(format!("{:?}", id)))
     }
 
     /// Тries to get a mutable reference to a room by its id.
@@ -47,7 +48,8 @@ impl House {
     /// иначе результат с ошибкой "Room not found!"
     pub fn try_get_room_mut(&mut self, id: RoomId) -> Result<&mut Room, InputError> {
         debug!("try_get_room_mut {:?}", id);
-        self.get_room_mut(id).ok_or(InputError::RoomNotFound)
+        self.get_room_mut(id)
+            .ok_or(InputError::RoomNotFound(format!("{:?}", id)))
     }
 
     /// Получить ссылку на комнату по индексу

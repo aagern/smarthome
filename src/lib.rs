@@ -4,10 +4,10 @@ use tracing::debug;
 
 #[derive(Error, Debug)]
 pub enum InputError {
-    #[error("Device not found!")]
-    DeviceNotFound,
-    #[error("Room not found!")]
-    RoomNotFound, // TODO Usage!
+    #[error("Device not found: {0}")]
+    DeviceNotFound(String),
+    #[error("Room not found {0}")]
+    RoomNotFound(String), // TODO Usage!
     #[error("Data cannot be empty!")]
     DataEmpty,
 }
