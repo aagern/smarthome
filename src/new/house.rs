@@ -1,6 +1,6 @@
 #![allow(unused)]
-use crate::InputError;
 use crate::new::room::Room;
+use crate::{InputError, SmartDevice};
 use std::collections::HashMap;
 use std::fmt;
 use tracing::debug;
@@ -47,6 +47,18 @@ impl House {
     // Get mutable link to room
     pub fn get_room_mut(&mut self, room_name: &str) -> Option<&mut Room> {
         self.rooms.get_mut(room_name)
+    }
+
+    // Get immutable link to device in house. Returns error if room or device not found
+    pub fn get_device(
+        &self,
+        room_name: &str,
+        device_name: &str,
+    ) -> Result<&SmartDevice, InputError> {
+        self.get_room(room_name)
+            .ok_or(InputError::RoomNotFound(room_name.to_string()))?
+            .get_device(device_name.to_string())
+            .ok_or(InputError::DeviceNotFound(device_name.to_string()))
     }
 
     // Check if house has room
