@@ -33,7 +33,7 @@ impl<T> NonEmptyVec<T> {
         }
     }
 
-    /// Добавка элемента в вектор
+    /// Добавляет элемент в вектор.
     pub fn push(&mut self, value: T) {
         self.rest.push(value);
     }
@@ -70,10 +70,12 @@ impl<T> NonEmptyVec<T> {
         }
     }
 
+    /// Возвращает итератор по элементам вектора.
     pub fn iter(&self) -> impl Iterator<Item = &T> {
         std::iter::once(&self.first).chain(self.rest.iter())
     }
 
+    /// Возвращает изменяемый итератор по элементам вектора.
     pub fn iter_mut(&mut self) -> impl Iterator<Item = &mut T> {
         std::iter::once(&mut self.first).chain(self.rest.iter_mut())
     }

@@ -1,6 +1,9 @@
 const TEMPERATURE: f32 = 36.6;
 const POWER: f32 = 2000.0;
 
+/// Термометр с фиксированным показанием температуры.
+/// # Overview
+/// Всегда возвращает значение `TEMPERATURE` (36.6°C) для текущей температуры.
 #[derive(PartialEq)]
 pub struct SmartThermometer {
     current_temperature: f32,
@@ -34,12 +37,18 @@ impl SmartThermometer {
     }
 }
 
+/// Состояние умной розетки: включено с текущей мощностью или выключено.
+/// # Overview
+/// При включении розетка хранит текущую мощность в ваттах.
 #[derive(PartialEq)]
 pub enum SocketState {
     On { power: f32 },
     Off,
 }
 
+/// Умная розетка с фиксированными значениями мощности.
+/// # Overview
+/// Всегда возвращает значение `POWER` (2000.0 Вт) для текущей мощности.
 #[derive(PartialEq)]
 pub struct SmartSocket {
     state: SocketState,
@@ -53,6 +62,7 @@ impl Default for SmartSocket {
 }
 
 impl SmartSocket {
+    /// Создаёт новую умную розетку с указанными ваттами.
     pub fn new(watts: f32) -> Self {
         SmartSocket {
             state: SocketState::On { power: watts },

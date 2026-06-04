@@ -1,5 +1,9 @@
 use rand::prelude::*;
 
+/// Термометр с случайными показаниями температуры.
+/// # Overview
+/// Генерирует случайную температуру при инициализации по умолчанию,
+/// но позволяет задать начальное значение явно.
 #[derive(PartialEq, Debug)]
 pub struct SmartThermometer {
     current_temperature: f32,
@@ -34,12 +38,18 @@ impl SmartThermometer {
     }
 }
 
+/// Состояние умной розетки: включено с текущей мощностью или выключено.
+/// # Overview
+/// При включении розетка хранит текущую мощность в ваттах.
 #[derive(PartialEq, Debug)]
 pub enum SocketState {
     On { power: f32 },
     Off,
 }
 
+/// Умная розетка с генерацией случайных показаний мощности.
+/// # Overview
+/// При инициализации по умолчанию генерирует случайную мощность между 1000.0 и 2000.0 Вт.
 #[derive(PartialEq, Debug)]
 pub struct SmartSocket {
     state: SocketState,

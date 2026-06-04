@@ -2,6 +2,11 @@ use std::fmt;
 use thiserror::Error;
 use tracing::debug;
 
+/// Ошибка входных данных, возникающая при поиске несуществующих устройств или комнат.
+/// # Варианты ошибок
+/// * `DeviceNotFound(String)` — устройство не найдено с указанным именем.
+/// * `RoomNotFound(String)` — комната не найдена с указанным именем/индексом.
+/// * `DataEmpty` — попытка получить данные из пустого контейнера.
 #[derive(Error, Debug)]
 pub enum InputError {
     #[error("Device not found: {0}")]
@@ -63,12 +68,17 @@ impl From<usize> for RoomId {
     }
 }
 
+/// Универсальный тип для всех устройств дома.
+/// # Варианты
+/// * `Thermometer(SmartThermometer)` — термометр.
+/// * `Socket(SmartSocket)` — умная розетка.
 #[derive(PartialEq)]
 pub enum SmartDevice {
     Thermometer(SmartThermometer),
     Socket(SmartSocket),
 }
 
+/// Форматирование SmartDevice для вывода в виде строки.
 impl fmt::Display for SmartDevice {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -91,6 +101,7 @@ impl fmt::Display for SmartDevice {
     }
 }
 
+/// Форматирование SmartDevice для отладочного вывода.
 impl fmt::Debug for SmartDevice {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
@@ -106,20 +117,22 @@ impl fmt::Debug for SmartDevice {
     }
 }
 
+/// Модуль с legacy-реализацией (индексная, на NonEmptyVec).
 pub mod legacy;
+/// Модуль с новой HashMap-реализацией (по строковым ключам).
 pub mod new;
 
 pub use legacy::{House, Room};
 // pub use new::{Room, House}; // переключить на новую реализацию, когда готово
 
-// Преобразование SmartDevice в универсальный тип
+/// Преобразование SmartSocket в универсальный тип SmartDevice.
 impl From<SmartSocket> for SmartDevice {
     fn from(s: SmartSocket) -> Self {
         SmartDevice::Socket(s)
     }
 }
 
-// Преобразование SmartThermometer в универсальный тип
+/// Преобразование SmartThermometer в универсальный тип SmartDevice.
 impl From<SmartThermometer> for SmartDevice {
     fn from(t: SmartThermometer) -> Self {
         SmartDevice::Thermometer(t)

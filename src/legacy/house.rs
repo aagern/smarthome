@@ -86,6 +86,7 @@ impl House {
     }
 }
 
+/// Форматирование House для вывода в виде строки.
 impl fmt::Display for House {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "== Отчёт о доме ==")?;
@@ -101,6 +102,7 @@ impl fmt::Display for House {
     }
 }
 
+/// Форматирование House для отладочного вывода.
 impl fmt::Debug for House {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         debug!("House {{ rooms: {:?} }}", self.rooms);

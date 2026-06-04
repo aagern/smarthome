@@ -1,6 +1,10 @@
 //use tracing::{instrument, warn};
 use tracing_subscriber::fmt::writer::MakeWriterExt;
 
+/// Настраивает глобальный subscriber для tracing.
+/// # Overview
+/// Выводит JSON в stdout для уровней INFO и выше,
+/// а также hourly rolling файлы в `./log/` для уровней TRACE и выше.
 pub fn setup_tracing() {
     let logfile = tracing_appender::rolling::hourly("./log", "smarthome");
     let stdout = std::io::stdout.with_max_level(tracing::Level::INFO);

@@ -71,6 +71,7 @@ impl Room {
     }
 }
 
+/// Форматирование Room для вывода в виде строки.
 impl fmt::Display for Room {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         writeln!(f, "== Устройства комнаты ==")?;
@@ -86,6 +87,7 @@ impl fmt::Display for Room {
     }
 }
 
+/// Форматирование Room для отладочного вывода.
 impl fmt::Debug for Room {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         debug!("Room {{ devices: {:?} }}", self.devices);
